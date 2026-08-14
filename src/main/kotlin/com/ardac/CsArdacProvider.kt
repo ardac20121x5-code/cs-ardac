@@ -5,7 +5,7 @@ import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
 
 class CsArdacProvider : MainAPI() {
-    override var mainUrl = "https://dizipal.tv" // URL değişebilir, dinamik kontrol gerekli
+    override var mainUrl = "https://dizipal1576.com"
     override var name = "Dizipal"
     override val hasMainPage = true
     override val hasQuickSearch = true
@@ -14,10 +14,12 @@ class CsArdacProvider : MainAPI() {
     // Dinamik URL kontrolü
     private suspend fun getWorkingUrl(): String {
         val possibleUrls = listOf(
-            "https://dizipal.tv",
+            "https://dizipal1576.com",
             "https://dizipal.com",
-            "https://dizipal.site",
-            "https://dizipal.xyz"
+            "https://dizipal1.com",
+            "https://dizipal2.com",
+            "https://dizipal.tv",
+            "https://dizipal.site"
         )
         
         for (url in possibleUrls) {
@@ -40,7 +42,7 @@ class CsArdacProvider : MainAPI() {
         val doc = app.get(workingUrl).document
 
         // Popüler Diziler
-        val popular = doc.select("div.populer-series, div.popular-content")
+        val popular = doc.select("div.populer-series, div.popular-content, div.trending")
         if (popular.isNotEmpty()) {
             items.add(
                 HomePageList(
@@ -51,7 +53,7 @@ class CsArdacProvider : MainAPI() {
         }
 
         // Son Eklenen
-        val recent = doc.select("div.recent-series, div.new-content")
+        val recent = doc.select("div.recent-series, div.new-content, div.latest")
         if (recent.isNotEmpty()) {
             items.add(
                 HomePageList(
@@ -65,7 +67,7 @@ class CsArdacProvider : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title = this.selectFirst("h3, .title")?.text() ?: return null
+        val title = this.selectFirst("h3, .title, h2")?.text() ?: return null
         val href = this.selectFirst("a")?.attr("href") ?: return null
         val poster = this.selectFirst("img")?.attr("src")
 
@@ -83,19 +85,19 @@ class CsArdacProvider : MainAPI() {
         val url = "$workingUrl/search?q=$query"
         val doc = app.get(url).document
 
-        return doc.select("div.search-result, div.content-item").mapNotNull { it.toSearchResult() }
+        return doc.select("div.search-result, div.content-item, div.result").mapNotNull { it.toSearchResult() }
     }
 
     override suspend fun load(url: String): LoadResponse {
         val doc = app.get(url).document
 
         val title = doc.selectFirst("h1.title, h1")?.text() ?: "Bilinmiyor"
-        val poster = doc.selectFirst("img.poster, img.cover")?.attr("src")
-        val description = doc.selectFirst("div.description, div.synopsis")?.text()
-        val rating = doc.selectFirst("div.rating, span.imdb")?.text()?.toRatingInt()
+        val poster = doc.selectFirst("img.poster, img.cover, img.main-img")?.attr("src")
+        val description = doc.selectFirst("div.description, div.synopsis, p.plot")?.text()
+        val rating = doc.selectFirst("div.rating, span.imdb, .score")?.text()?.toRatingInt()
 
-        val episodes = doc.select("div.episode, .ep-item").mapIndexed { index, ep ->
-            val epName = ep.selectFirst("span.ep-name, .ep-title")?.text() ?: ""
+        val episodes = doc.select("div.episode, .ep-item, li.episode").mapIndexed { index, ep ->
+            val epName = ep.selectFirst("span.ep-name, .ep-title, .name")?.text() ?: ""
             val epLink = ep.selectFirst("a")?.attr("href") ?: ""
             Episode(
                 name = epName,
@@ -126,8 +128,8 @@ class CsArdacProvider : MainAPI() {
         val doc = app.get(data).document
 
         // Video kaynakları çek
-        doc.select("div.video-source, iframe, .player-frame").forEach { source ->
-            val quality = source.selectFirst("span.quality, .quality-badge")?.text() ?: "720p"
+        doc.select("div.video-source, iframe, .player-frame, .video-container").forEach { source ->
+            val quality = source.selectFirst("span.quality, .quality-badge, .res")?.text() ?: "720p"
             val videoUrl = source.selectFirst("a")?.attr("href") 
                 ?: source.attr("src")
                 ?: source.attr("data-src")
@@ -136,7 +138,7 @@ class CsArdacProvider : MainAPI() {
                 callback(
                     ExtractorLink(
                         source = this.name,
-                        name = "$quality",
+                        name = quality,
                         url = videoUrl,
                         referer = data,
                         quality = getQuality(quality),
@@ -147,8 +149,8 @@ class CsArdacProvider : MainAPI() {
         }
 
         // Altyazıları çek
-        doc.select("div.subtitle, track, .sub-option").forEach { sub ->
-            val lang = sub.selectFirst("span.lang, .lang-name")?.text() ?: "Türkçe"
+        doc.select("div.subtitle, track, .sub-option, .subtitle-item").forEach { sub ->
+            val lang = sub.selectFirst("span.lang, .lang-name, .language")?.text() ?: "Türkçe"
             val subUrl = sub.selectFirst("a")?.attr("href") 
                 ?: sub.attr("src")
                 ?: sub.attr("data-src")
@@ -177,19 +179,19 @@ class CsArdacProvider : MainAPI() {
     }
 }
 
-class HDFilmchennemiProvider : MainAPI() {
-    override var mainUrl = "https://hdfilmchennemimi.nl" // Güncellenmiş URL
-    override var name = "HDFilmchennemini"
+class HDFilmcehemmiProvider : MainAPI() {
+    override var mainUrl = "https://hdfilmcehennemi.nl"
+    override var name = "HDFilmcehennemi"
     override val hasMainPage = true
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
 
     // Dinamik URL kontrolü
     private suspend fun getWorkingUrl(): String {
         val possibleUrls = listOf(
-            "https://hdfilmchennemimi.nl",
-            "https://hdfilmchennemini.com",
-            "https://hdfilmchennemini.site",
-            "https://hdfilmchennemini.tv"
+            "https://hdfilmcehennemi.nl",
+            "https://hdfilmcehennemi.com",
+            "https://hdfilmcehennemi.tv",
+            "https://hdfilmcehennemi.site"
         )
         
         for (url in possibleUrls) {
@@ -208,7 +210,7 @@ class HDFilmchennemiProvider : MainAPI() {
         val workingUrl = getWorkingUrl()
         val doc = app.get(workingUrl).document
 
-        val movies = doc.select("div.movie-item, div.film-box, .content-box")
+        val movies = doc.select("div.movie-item, div.film-box, .content-box, .movie")
         if (movies.isNotEmpty()) {
             items.add(
                 HomePageList(
@@ -222,14 +224,14 @@ class HDFilmchennemiProvider : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title = this.selectFirst("h3, .title, .film-title")?.text() ?: return null
+        val title = this.selectFirst("h3, .title, .film-title, h2")?.text() ?: return null
         val href = this.selectFirst("a")?.attr("href") ?: return null
         val poster = this.selectFirst("img")?.attr("src")
 
         return MovieSearchResponse(
             name = title,
             url = href,
-            apiName = this@HDFilmchennemiProvider.name,
+            apiName = this@HDFilmcehemmiProvider.name,
             type = TvType.Movie,
             posterUrl = poster
         )
@@ -239,20 +241,20 @@ class HDFilmchennemiProvider : MainAPI() {
         val workingUrl = getWorkingUrl()
         val url = "$workingUrl/search?q=$query"
         val doc = app.get(url).document
-        return doc.select("div.movie-item, div.film-box").mapNotNull { it.toSearchResult() }
+        return doc.select("div.movie-item, div.film-box, .result").mapNotNull { it.toSearchResult() }
     }
 
     override suspend fun load(url: String): LoadResponse {
         val doc = app.get(url).document
 
         val title = doc.selectFirst("h1.movie-title, h1")?.text() ?: "Bilinmiyor"
-        val poster = doc.selectFirst("img.movie-poster, img.cover")?.attr("src")
-        val description = doc.selectFirst("div.movie-description, .synopsis")?.text()
+        val poster = doc.selectFirst("img.movie-poster, img.cover, img.main-img")?.attr("src")
+        val description = doc.selectFirst("div.movie-description, .synopsis, p.plot")?.text()
 
         return MovieLoadResponse(
             name = title,
             url = url,
-            apiName = this@HDFilmchennemiProvider.name,
+            apiName = this@HDFilmcehemmiProvider.name,
             type = TvType.Movie,
             posterUrl = poster,
             plot = description
@@ -267,8 +269,8 @@ class HDFilmchennemiProvider : MainAPI() {
     ): Boolean {
         val doc = app.get(data).document
 
-        doc.select("div.player-link, iframe, .video-source").forEach { link ->
-            val quality = link.selectFirst("span.quality, .quality-badge")?.text() ?: "720p"
+        doc.select("div.player-link, iframe, .video-source, .player").forEach { link ->
+            val quality = link.selectFirst("span.quality, .quality-badge, .res")?.text() ?: "720p"
             val url = link.selectFirst("a")?.attr("href") 
                 ?: link.attr("src")
                 ?: link.attr("data-src")
@@ -292,8 +294,8 @@ class HDFilmchennemiProvider : MainAPI() {
         }
 
         // Altyazıları çek
-        doc.select("track, div.subtitle, .sub-item").forEach { sub ->
-            val lang = sub.selectFirst("span.lang")?.text() ?: "Türkçe"
+        doc.select("track, div.subtitle, .sub-item, .subtitle").forEach { sub ->
+            val lang = sub.selectFirst("span.lang, .language")?.text() ?: "Türkçe"
             val subUrl = sub.attr("src").ifEmpty { sub.attr("data-src") }
             
             if (subUrl.isNotEmpty()) {
