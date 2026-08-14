@@ -1,16 +1,5 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20'
-    }
-}
-
 plugins {
-    id 'com.android.library'
+    id 'com.android.library' version '7.4.2'
     id 'kotlin-android'
 }
 
@@ -64,16 +53,4 @@ dependencies {
     
     // Kotlin
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.20'
-}
-
-task buildPlugin {
-    doLast {
-        // Build jar file
-        exec {
-            commandLine 'chmod', '+x', 'gradlew'
-        }
-        exec {
-            commandLine './gradlew', 'build'
-        }
-    }
 }
