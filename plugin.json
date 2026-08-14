@@ -1,0 +1,33 @@
+{
+  "name": "cs-ardac",
+  "version": "1.0.0",
+  "description": "Dizipal ve HDFilmchennemini'den film ve dizi izleme eklentisi",
+  "author": "ardac20121x5-code",
+  "language": "tr",
+  "repositoryUrl": "https://github.com/ardac20121x5-code/cs-ardac",
+  "sources": [
+    {
+      "name": "Dizipal",
+      "url": "https://dizipal.com",
+      "type": "series",
+      "quality": ["1080p", "720p", "480p", "360p"],
+      "subtitles": ["tr", "en"],
+      "audio": ["tr", "original"]
+    },
+    {
+      "name": "HDFilmchennemini",
+      "url": "https://hdfilmchennemini.com",
+      "type": "movies",
+      "quality": ["1080p", "720p", "480p"],
+      "subtitles": ["tr"],
+      "audio": ["tr"]
+    }
+  ],
+  "features": [
+    "search",
+    "main_page",
+    "quality_select",
+    "subtitle_select",
+    "audio_select"
+  ]
+}
