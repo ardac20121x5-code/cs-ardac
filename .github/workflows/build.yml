@@ -18,6 +18,8 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+-name: download gradle
+run: sudo apt install gradle
     
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
