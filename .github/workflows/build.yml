@@ -21,6 +21,10 @@ jobs:
         
     - name: download gradle
       run: sudo apt install gradle
+
+    - name: dgr
+    run: gradle wrapper --gradle-version 7.6
+
     
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
